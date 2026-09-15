@@ -1,0 +1,7 @@
+# build
+.zig-cache
+zig-out
+
+# sidecar
+sidecar/gw-dns
+sidecar/gw-dns-linux
