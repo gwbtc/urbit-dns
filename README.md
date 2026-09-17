@@ -47,6 +47,18 @@ answers the HTTP-01 challenge on port 80, so a pier started with
 `--http-port 8080` needs port 80 forwarded to it before the certificate can
 be issued.
 
+A comet with this desk can do the whole job itself:
+
+```
+-dns!dns-address [%if .1.2.3.4]
+```
+
+The thread checks that the ship answers on port 80 at that address, watches
+`/~comet` on the sponsor's `%gw-dns`, pokes it with the address, waits for
+the binding, checks the ship answers at the domain, and installs the turf.
+It produces the turf. The sponsor's `@p` is a constant in
+`ted/dns/address.hoon`.
+
 ## State epochs
 
 The agent's state is tagged with the date of the wordlist and zone it was
