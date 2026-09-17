@@ -30,7 +30,8 @@ const dependencies = [_]RepoImport{
     // facts as %dns-collector, and gall resolves marks on the agent's desk
     .{
         .name = "arvo-dns",
-        .local = "../urbit",
+        .url = "https://github.com/gwbtc/urbit",
+        .commit = "802b386a4387126d8a2b14fd674329613b5db460",
         .prefix = "pkg/arvo",
         .paths = &.{
             "sur/dns.hoon",
@@ -43,7 +44,8 @@ const dependencies = [_]RepoImport{
     },
     .{
         .name = "base-dev",
-        .local = "../urbit",
+        .url = "https://github.com/gwbtc/urbit",
+        .commit = "802b386a4387126d8a2b14fd674329613b5db460",
         .prefix = "pkg/base-dev",
         .paths = &.{
             "lib/dbug.hoon",
