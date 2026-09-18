@@ -53,11 +53,17 @@ A comet with this desk can do the whole job itself:
 -dns!dns-address [%if .1.2.3.4]
 ```
 
-The thread checks that the ship answers on port 80 at that address, watches
-`/~comet` on the sponsor's `%gw-dns`, pokes it with the address, waits for
-the binding, checks the ship answers at the domain, and installs the turf.
-It produces the turf. The sponsor's `@p` is a constant in
-`ted/dns/address.hoon`.
+The thread watches `/~comet` on the sponsor's `%gw-dns`, pokes it with the
+address, waits for the binding, and installs the turf. It produces the turf.
+The sponsor's `@p` is a constant in `ted/dns/address.hoon`.
+
+The thread does not check that port 80 reaches the ship, neither at the
+address nor at the domain: `%acme` makes that check itself when it orders
+the certificate, and retries on a timer if it fails. (The upstream thread
+did both checks by fetching itself through iris, which hangs forever on a
+ship whose eyre redirects unknown paths to `/~/login`, as every ship running
+Landscape does: iris follows the redirect with the relative `location`
+header and the runtime drops a request it cannot parse without answering.)
 
 ## State epochs
 
