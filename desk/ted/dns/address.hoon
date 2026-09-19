@@ -6,8 +6,20 @@
 ::    turf to eyre, which orders the certificate through %acme.
 ::    produces the turf
 ::
+::    the upstream thread fetched its own address on port 80 through
+::    iris before asking, and fetched the new domain the same way
+::    before installing it.  neither check is load-bearing: %acme
+::    validates port 80 at the domain itself and retries on a timer,
+::    and a turf without a certificate is harmless.  both checks also
+::    hang forever on any ship whose eyre answers an unbound path with
+::    a redirect to /~/login, which is every ship running landscape:
+::    iris follows the redirect with the relative location header, and
+::    the runtime drops a request it cannot parse without answering.
+::    so we install the turf as soon as the binding arrives and leave
+::    the port-80 question to %acme.
+::
 /-  spider, dns
-/+  strandio, libdns=dns
+/+  strandio
 =,  strand=strand:spider
 ^-  thread:spider
 |=  arg=vase
@@ -25,12 +37,6 @@
   %+  strand-fail:strandio  %reserved-address
   [>"ip address {<if.adr>} is reserved"< ~]
 ::
-::  %acme answers its challenge on port 80, so check that first
-;<  good=?    bind:m  (self-check-http:libdns |+if.adr 2)
-?.  good
-  %+  strand-fail:strandio  %bail-early-self-check
-  [>"couldn't access ship on port 80"< ~]
-::
 ;<  ~         bind:m  (watch:strandio /response collector /(scot %p our))
 ;<  ~         bind:m  (poke:strandio collector %dns-address !>(adr))
 ;<  ~         bind:m
@@ -43,14 +49,12 @@
   ~
 ;<  =turf     bind:m  (take-turf adr)
 ;<  ~         bind:m  (leave:strandio /response collector)
-;<  good=?    bind:m  (turf-confirm-install:libdns turf)
+;<  ~         bind:m  (install-domain:strandio turf)
 ;<  ~         bind:m
-  %+  app-message:strandio  %dns
-  ?:  good
-    [(cat 3 'confirmed access via ' (en-turf:html turf)) ~]
-  :-  (cat 3 'unable to access via ' (en-turf:html turf))
-  :~  leaf+"XX check via nslookup"
-      leaf+"XX confirm port 80"
+  %^  app-message:strandio  %dns
+    (cat 3 'installed ' (en-turf:html turf))
+  :~  leaf+"%acme orders the certificate next; it needs port 80"
+      leaf+"at that name to reach this ship"
   ==
 (pure:m !>(turf))
 ::
