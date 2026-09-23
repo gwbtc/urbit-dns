@@ -30,7 +30,63 @@ Only comets get domains. Anything else is rejected.
   over Eyre) returns the assigned domain as a JSON string, whether pending or
   complete. `/x/requested` and `/x/completed` return the maps as nouns.
 
-### On the comet
+### Getting a URL for your comet (the runbook)
+
+This is the whole procedure for a comet booted by `boot.sh` on its own
+droplet. Four steps, two of them on the droplet's shell as root and two in
+the ship's dojo. It takes about three minutes end to end.
+
+1. **Forward port 80 to the ship, once, on the droplet.** `boot.sh` runs the
+   ship on port 8080; the certificate authority validates on port 80. This
+   rule sends 80 to 8080 and survives reboots (renewals need it too):
+
+   ```sh
+   iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8080
+   DEBIAN_FRONTEND=noninteractive apt-get install -y iptables-persistent && netfilter-persistent save
+   ```
+
+   Check from anywhere outside the droplet: `curl http://<droplet ip>/~/host`
+   prints the ship's name.
+
+2. **Install this desk from the sponsor**, in the dojo (the sponsor publishes
+   it; the local desk is named `%dns`):
+
+   ```
+   |install ~barmul-bolmet-ronlus-lighul--rovtun-satryc-moclug-daplyd %dns
+   ```
+
+   Wait for `kiln: merge into %dns succeeded` (a minute or two).
+
+3. **Ask for the domain**, in the dojo, with the droplet's public IPv4:
+
+   ```
+   -dns!dns-address [%if .1.2.3.4]
+   ```
+
+   Within seconds it prints `dns: installed <name>.groundwire.me` and returns
+   the turf. The name is two words of the ship's mnemonym (more if two are
+   taken); the sponsor's `/x/domain/~comet` scry answers the same name.
+
+4. **Wait for the certificate.** Eyre has handed the domain to `%acme`, which
+   orders a certificate over port 80; the ship's log prints
+   `http: web interface live on https://localhost:443` when it is installed,
+   usually within two minutes. Verify: `curl https://<name>.groundwire.me/~/host`.
+
+**What changes afterwards.** Once the certificate is live, eyre redirects
+every plain-http request to https, so `http://<ip>:8080/...` now answers
+`301 https://<ip>/...`, which fails TLS (the certificate is for the name).
+From then on use `https://<name>.groundwire.me` everywhere: Landscape
+(`/apps/landscape/`), Drive (`/drive`), Tlon (`/apps/groups/`), and the
+address typed into any phone app. Sessions already logged in by IP must log
+in again by name; the `+code` is unchanged.
+
+**If it goes wrong.** The thread fails fast with a reason (`%ship-type-fail`
+for a non-comet, `%reserved-address` for a private IP). A certificate that
+never arrives means port 80 does not reach the ship from the internet: redo
+step 1's check. The thread can be run again at any time; a new address for
+the same ship replaces the old record.
+
+### The mechanism
 
 The comet needs nothing from this desk, and the user should never have to do
 this step by hand: Causeway (or whatever drives the comet's VPS during
