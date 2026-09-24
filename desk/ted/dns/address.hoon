@@ -54,7 +54,10 @@
   %^  app-message:strandio  %dns
     (cat 3 'installed ' (en-turf:html turf))
   :~  leaf+"%acme orders the certificate next; it needs port 80"
-      leaf+"at that name to reach this ship"
+      leaf+"at that name to reach this ship (a ship on 8080 needs"
+      leaf+"port 80 forwarded to it). once the certificate is in,"
+      leaf+"plain http to the ip redirects to https and fails, so"
+      leaf+"log in at https://{(trip (en-turf:html turf))} from then on"
   ==
 (pure:m !>(turf))
 ::
