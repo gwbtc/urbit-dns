@@ -63,7 +63,7 @@ the ship's dojo. It takes about three minutes end to end.
    -dns!dns-address [%if .1.2.3.4]
    ```
 
-   Within seconds it prints `dns: installed <name>.groundwire.me` and returns
+   Within seconds it prints one line, `> %dns: this ship is now <name>.groundwire.me; …`, and returns
    the turf. The name is two words of the ship's mnemonym (more if two are
    taken); the sponsor's `/x/domain/~comet` scry answers the same name.
 
