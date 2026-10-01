@@ -18,6 +18,9 @@
 ::  the work behind the agent arms, over the bowl and state
 ++  go
   |_  [=bowl:gall =state]
+  ::  +dbg: the traces below print only when this is yes
+  ++  dbg  ^-(? |)
+  ::
   ++  handle-noun
     |=  non=*
     ^-  (quip card _state)
@@ -25,7 +28,7 @@
       ~&  bowl=bowl
       ~&  state=state
       `state
-    ~&  %poke-unknown
+    ~>  %slog.[2 leaf+"%gw-dns: ignored an unrecognized noun poke; the only one it takes is %debug"]
     `state
   ::
   ::  assign a domain and ask the sidecar to bind it. a comet that
@@ -70,7 +73,7 @@
             =(address.binding address.u.req)
             =(turf.binding turf.u.req)
         ==
-      ~&  [%gw-dns-unknown-complete who binding]
+      ~?  dbg  [%gw-dns-unknown-complete who binding]
       `state
     =:  requested.state  (~(del by requested.state) who)
         completed.state  (~(put by completed.state) who binding)

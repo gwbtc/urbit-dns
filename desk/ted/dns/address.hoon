@@ -39,26 +39,15 @@
 ::
 ;<  ~         bind:m  (watch:strandio /response collector /(scot %p our))
 ;<  ~         bind:m  (poke:strandio collector %dns-address !>(adr))
-;<  ~         bind:m
-  %^  app-message:strandio  %dns
-    (cat 3 'request for DNS sent to ' (scot %p p:collector))
-  ~
-;<  ~         bind:m
-  %^  app-message:strandio  %dns
-    (cat 3 'awaiting response from ' (scot %p p:collector))
-  ~
 ;<  =turf     bind:m  (take-turf adr)
 ;<  ~         bind:m  (leave:strandio /response collector)
 ;<  ~         bind:m  (install-domain:strandio turf)
-;<  ~         bind:m
-  %^  app-message:strandio  %dns
-    (cat 3 'installed ' (en-turf:html turf))
-  :~  leaf+"%acme orders the certificate next; it needs port 80"
-      leaf+"at that name to reach this ship (a ship on 8080 needs"
-      leaf+"port 80 forwarded to it). once the certificate is in,"
-      leaf+"plain http to the ip redirects to https and fails, so"
-      leaf+"log in at https://{(trip (en-turf:html turf))} from then on"
-  ==
+::  one notice: the operator's login address just changed.  %acme
+::  orders the certificate over port 80 at that name (a ship on 8080
+::  needs port 80 forwarded to it); once it lands, plain http to the ip
+::  redirects to https and fails, so the name is the address from then on.
+=/  nam=tape  (trip (en-turf:html turf))
+~>  %slog.[1 leaf+"%dns: this ship is now {nam}; once its certificate arrives (it needs port 80), log in at https://{nam}"]
 (pure:m !>(turf))
 ::
 ::  the sponsor ship running %gw-dns
